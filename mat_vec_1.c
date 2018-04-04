@@ -70,12 +70,12 @@ main (int argc, char *argv[] )    {
   gettimeofday (&tv ,   &tz);
   time_start = (double)tv.tv_sec +
             (double)tv.tv_usec / 1000000.0;
-  for (int i = 0; i < thread_count; i++) {
+  for (i = 0; i < thread_count; i++) {
 	  args[i].seed = i;
-	  pthread_create(&threads[i], &attr, mult, (void *) args[i]); 
+	  pthread_create(&threads[i], &attr, mult, (void *) &args[i]); 
   }
   
-  for (i=0; i< num_threads; i++)	{
+  for (i=0; i< thread_count; i++)	{
 	  pthread_join (threads[i], NULL);
 
   }
@@ -92,11 +92,15 @@ main (int argc, char *argv[] )    {
 }
 
 void *mult(void *arg) {
-	int start = arg.seed * N/thread_count;
-	int end = (arg.seed 1) * N/thread_count;
-	if (arg.seed == thread_count - 1) end = N;
+	struct thread_arg *local;
+	local = arg;
+	int i = 0, j=0;
+	int start = local->seed * N/thread_count;
+	int end = (local->seed + 1) * N/thread_count;
+	if (local->seed == thread_count - 1) end = N;
     for (i=start; i<end; i++) {
       for (j=0; j<N; j++) {
+		  //fprintf(stdout, "%f", x[i]);
          x[i] += a[i][j] * b[j];
       }
     }
